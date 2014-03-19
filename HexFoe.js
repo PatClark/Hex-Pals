@@ -54,7 +54,15 @@ function foeMove() {
 	if (thatBadGuy.length > 0) {
 		for (i=0;i<thatBadGuy.length;i++) {
 			var badguy = thatBadGuy[i]
-			var result = path(badguy.grid[0],badguy.grid[1],thatOneGuy[0].grid[0],thatOneGuy[0].grid[1]);
+			var result1 = hex_distance(badguy.grid[0],badguy.grid[1],thatOneGuy[0].grid[0],thatOneGuy[0].grid[1]);
+			var result2 = hex_distance(badguy.grid[0],badguy.grid[1],thatOneGuy[1].grid[0],thatOneGuy[1].grid[1]);
+			if (result1 == result2) {
+				var tgt = Math.random();
+				if (tgt < .5) {tgt = 0;} else {tgt = 1;}
+			}
+			if (result1 < result2) {tgt = 0;} else {tgt = 1;}
+
+			var result = path(badguy.grid[0],badguy.grid[1],thatOneGuy[tgt].grid[0],thatOneGuy[tgt].grid[1]);
 
 			if (result != false) {
 				//console.log(result);
