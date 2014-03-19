@@ -8,10 +8,10 @@
 				padding: 0px;
 			}
 		</style>
-		<script language="javascript" src="https://raw.github.com/PatClark/Hex-Pals/master/Hex.js"></script>
-		<script language="javascript" src="https://raw.github.com/PatClark/Hex-Pals/master/HexFoe.js"></script>
-		<script language="javascript" src="https://raw.github.com/PatClark/Hex-Pals/master/HexGuy.js"></script>
-		<script language="javascript" src="https://raw.github.com/PatClark/Hex-Pals/master/HexPath.js"></script>
+		<script language="javascript" src="/Users/Patrick/Downloads/js/Hex.js"></script>
+		<script language="javascript" src="/Users/Patrick/Downloads/js/HexFoe.js"></script>
+		<script language="javascript" src="/Users/Patrick/Downloads/js/HexGuy.js"></script>
+		<script language="javascript" src="/Users/Patrick/Downloads/js/HexPath.js"></script>
 	</head>
 	<body onload = "init();">
 		<canvas height=750 width=640 id = "hexCanvas">You'll need an HTML5-compliant browser to view this.
@@ -19,8 +19,8 @@
 		<div id="buttonDiv" style="position:absolute;left:650px;top:50px;">
 			<button type="button" id="findCell" onclick="buttonFind()">findCell</button>
 			<br>
-			<button type="button" id="moveGuy" onclick="buttonMove()">moveGuy</button>or just click on the guy
-			<br>
+			<!--button type="button" id="moveGuy" onclick="buttonMove()"><b>moveGuy</b></button>or just click on the guy
+			<br-->
 			<button type="button" id="makeFoe" onclick="buttonFoe()">makeFoe</button>place a single foe
 			<br>
 			<button type="button" id="pcgFoe" onclick="buttonPcg()">pcgFoe</button>generate five foes
@@ -59,7 +59,7 @@
 
 				field.draw(cxt);
 
-				obstacles(grid.x*grid.y/3);
+				obstacles(grid.x*grid.y/5);
 
 				pcgFoe(7);
 
@@ -207,8 +207,7 @@
 						redraw();
 						redrawGuys();
 						activeGuy = result.has_guy;
-						if (activeGuy == 1) {var color = "red";} else {if (activeGuy == 2) {var color = "purple";}}
-						console.log("Active Guy is " + color);
+						whoIsGuy();
 						document.onclick = moveGuy;
 					} else {
 						if (func == findPath) {
