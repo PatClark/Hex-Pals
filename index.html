@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>	
+	<head>
+		<meta charset="utf-8">
+		<style>
+			body {
+				margin: 0px;
+				padding: 0px;
+			}
+		</style>
+		<script language="javascript" src="/Users/Patrick/Downloads/js/Hex.js"></script>
+		<script language="javascript" src="/Users/Patrick/Downloads/js/HexFoe.js"></script>
+		<script language="javascript" src="/Users/Patrick/Downloads/js/HexGuy.js"></script>
+		<script language="javascript" src="/Users/Patrick/Downloads/js/HexPath.js"></script>
+	</head>
+	<body onload = "init();">
+		<canvas height=750 width=640 id = "hexCanvas">You'll need an HTML5-compliant browser to view this.
+		</canvas> <!iPhone is 1136x640>
+		<div id="buttonDiv" style="position:absolute;left:650px;top:50px;">
+			<button type="button" id="findCell" onclick="buttonFind()">findCell</button>
+			<br>
+			<button type="button" id="moveGuy" onclick="buttonMove()">moveGuy</button>or just click on the guy
+			<br>
+			<button type="button" id="makeFoe" onclick="buttonFoe()">makeFoe</button>place a single foe
+			<br>
+			<button type="button" id="pcgFoe" onclick="buttonPcg()">pcgFoe</button>generate five foes
+			<br>
+			<button type="button" id="makeObs" onclick="buttonObs()">obstacle</button>
+			<br>
+			<button type="button" id="path" onclick="buttonPath()">path</button>
+		</div>
+
+		<script language = "javascript">
+
+			var c = document.getElementById("hexCanvas"),
+				cxt = c.getContext("2d"),
+				field,
+				resultsArray = new Array(),
+				grid = new Array(),
+				obsArray = new Array(),
+				thatOneGuy = new Array(),
+				thatBadGuy = new Array(),
+				activeGuy = 1;
+
+			grid.x = 13;
+			grid.y = 7;
+
+			function init() {
+				//document.onclick = moveGuy;
+				//c = document.getElementById("c");
+				//cxt = c.getContext("2d");
+				cxt.fillStyle = "#fff";
+				cxt.strokeStyle = "#000";
+				cxt.lineWidth = 1;
+
+				// Parameters to constructor are cell-size, grid-height, grid-width, grid-top, grid-left
+				// This is in "odd-q" vertical layout
+				field = new Hexcellent(56,grid.x,grid.y,56,56)
+
+				field.draw(cxt);
+
+				obstacles(grid.x*grid.y/3);
+
+				pcgFoe(7);
+
+				var result = field.findCell(75,50);
+				var newX = result.getX() + result.getA(),
+					newY = result.getY(),
+					newSize = result.getSize()/2;
+
+				var result2 = field.findCell(75,100);
+				var newX2 = result2.getX() + result2.getA();
+					newY2 = result2.getY();
+
+
+				guy(newSize,newX,newY);
+				guy2(newSize,newX2,newY2);
+				buttonSelect(moveGuy);
+			}
+
+			function findCell(e) {
+				var x = e.pageX-5,
+					y = e.pageY-5;
+
+				var result = field.findCell(x,y);
+				if (result != null) {
+					console.log("(" + result.gridX + "," + result.gridY + ")");
+
+					if (result.obs == true) {
+						console.log("obstacle");
+					} 
+					if (result.has_foe == true) {
+						console.log("contains foe");
+					}
+					if (result.has_guy == true) {
+						console.log("contains player");
+					}
+					console.log(result);
+				}
+			}
+
+			function obstacles(num) {
+				for (i=0;i<num;i++) {
+					var result = grid[Math.floor(Math.random()*grid.x)][Math.floor(Math.random()*grid.y)];
+					if (result != grid[0][0] && result != grid[0][1] && result != grid[1][0]) {
+						result.obs = true;
+						obsArray[i] = result;
+						cxt.fillStyle = "blue";
+						result.draw(cxt);
+					} else {i--;}
+				}
+			}
+
+			function makeObs(e) {
+				var x = e.pageX-5,
+					y = e.pageY-5;
+
+				var result = field.findCell(x,y);
+				if (result != null && result.has_guy != false && result.has_guy != undefined && !result.has_foe) {
+					result.obs = true;
+					obsArray.push(result);
+					cxt.fillStyle = "blue";
+					result.draw(cxt);
+				}
+			}
+
+			function findPath(e) {
+				var x = e.pageX-5,
+					y = e.pageY-5;
+
+				var result = field.findCell(x,y);
+				if (result != null) {
+
+					// erase old path
+					redraw();
+
+					var endX = result.gridX;
+					var endY = result.gridY;
+					path(thatOneGuy[0].grid[0],thatOneGuy[0].grid[1],endX,endY,true);
+
+					// redraw guy
+					redrawGuys();
+				}	
+			}
+
+			function redraw() {
+				// grid
+				cxt.fillStyle = "#fff";
+				cxt.strokeStyle = "#000";
+				cxt.lineWidth = 1;
+				field.draw(cxt);
+
+				// obstacles
+				cxt.fillStyle = "blue";
+				for (i=0;i<obsArray.length;i++) {
+					obsArray[i].draw(cxt);
+				}
+			}
+
+			function redrawGuys() {
+				// bad guys
+				cxt.fillStyle = "yellow";
+				cxt.strokeStyle = "#000";
+				cxt.lineWidth = 1;
+				for (i=0;i<thatBadGuy.length;i++) {
+					thatBadGuy[i].draw(cxt);
+				}
+
+				// that one guy
+				cxt.fillStyle = "red";
+				thatOneGuy[0].draw(cxt);
+				cxt.fillStyle = "purple";
+				thatOneGuy[1].draw(cxt);
+			}
+
+			//to get mouse coordinates
+			function writeMsg(c,msg) {
+				cxt.clearRect(0,0,c.width,20);
+				cxt.fillStyle = "black";
+				cxt.fillText(msg,10,17);
+			}
+
+			function getMousePos(c,evt) {
+				var rect = c.getBoundingClientRect();
+				return {
+					x: evt.clientX - rect.left,
+					y: evt.clientY - rect.top
+				};
+			}
+
+			c.addEventListener("mousemove",function(evt) {
+				var mousePos = getMousePos(c,evt);
+				var msg = "Mouse position: " + mousePos.x + "," + mousePos.y;
+				writeMsg(c,msg);
+			}, false);
+
+			function buttonSelect(func) {
+				redraw();
+				redrawGuys();
+				document.onclick = function(e) {
+					var x = e.pageX-5,
+						y = e.pageY-5,
+						z = e;
+
+					var result = field.findCell(x,y);
+					if (result != null && result.has_guy != false && result.has_guy != undefined) {
+						redraw();
+						redrawGuys();
+						activeGuy = result.has_guy;
+						if (activeGuy == 1) {var color = "red";} else {if (activeGuy == 2) {var color = "purple";}}
+						console.log("Active Guy is " + color);
+						document.onclick = moveGuy;
+					} else {
+						if (func == findPath) {
+							redraw();
+							redrawGuys();
+						}
+						func(e);
+					}
+				}
+			}
+
+			function buttonFind() {
+				buttonSelect(findCell);
+			}
+
+			function buttonMove() {
+				buttonSelect(moveGuy);
+			}
+
+			function buttonFoe() {
+				buttonSelect(makeFoe);
+			}
+
+			function buttonObs() {
+				buttonSelect(makeObs);
+			}
+
+			function buttonPcg() {
+				redraw();
+				redrawGuys();
+				pcgFoe(5);
+			}
+
+			function buttonPath() {
+				buttonSelect(findPath);
+			}
+
+		</script>
+	</body>
+</html>
