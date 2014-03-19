@@ -1,3 +1,5 @@
+var move_count = 0;
+
 function guy(aSize,anX,aY) {
 	var newGuy = new Array();
 		//theX = anX + 25;
@@ -36,8 +38,8 @@ function moveGuy(e) {
 	if (index == 1) {var color = "purple";}
 
 	var result = field.findCell(x,y);
-	if (result != null && result.obs != true) {
-		if (result.has_guy != 1 && result.has_guy != 2) {
+	if (result != null && !result.obs) {
+		if (typeof result.has_guy != "number") {
 			var newX = result.getX() + result.getA(),
 				newY = result.getY();
 
@@ -51,6 +53,8 @@ function moveGuy(e) {
 
 			pc.grid=[result.gridX,result.gridY];
 			result.has_guy = index+1;
+			move_count++;
+			console.log("move_count = " + move_count);
 
 			var num_foes = thatBadGuy.length;
 			var dead = -1;
@@ -63,7 +67,15 @@ function moveGuy(e) {
 				thatBadGuy.splice(dead,1);
 				result.has_foe = false;
 			}
-			foeMove();
+			if (move_count >= 2) {
+				foeMove();
+				move_count = 0;
+			}
+		} else if (result.has_guy != index+1) {
+			activeGuy = result.has_guy;
+			whoIsGuy();
+		} else {
+
 		}
 	}
 }
@@ -79,4 +91,9 @@ function byeOldGuy(index) {
 	var was = field.findCell(oldX,oldY);
 	was.draw(cxt);
 	was.has_guy = false;
+}
+
+function whoIsGuy() {
+	if (activeGuy == 1) {var color = "red"} else {if (activeGuy == 2) {var color = "purple";}}
+	console.log("Active Guy is " + color);
 }
