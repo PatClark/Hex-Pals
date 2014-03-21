@@ -1,4 +1,10 @@
-var move_count = 0;
+var move_count = 2;
+
+function write_report(c,msg) {
+	cxt.clearRect(160,0,150,20);
+	cxt.fillStyle="black";
+	cxt.fillText(msg,165,17);
+}
 
 function guy(aSize,anX,aY) {
 	var newGuy = new Array();
@@ -31,7 +37,8 @@ function guy2(aSize,anX,aY) {
 function moveGuy(e) {
 	var x = e.pageX-5,
 		y = e.pageY-5,
-		index = activeGuy-1;
+		index = activeGuy-1,
+		msg;
 
 	var pc = thatOneGuy[index];
 	if (index == 0) {var color = "red";}
@@ -53,8 +60,10 @@ function moveGuy(e) {
 
 			pc.grid=[result.gridX,result.gridY];
 			result.has_guy = index+1;
-			move_count++;
-			console.log("move_count = " + move_count);
+			move_count--;
+			//console.log("move_count = " + move_count);
+			msg = "Moves until enemy turn: " + move_count;
+			write_report(c,msg);
 
 			var num_foes = thatBadGuy.length;
 			var dead = -1;
@@ -67,9 +76,9 @@ function moveGuy(e) {
 				thatBadGuy.splice(dead,1);
 				result.has_foe = false;
 			}
-			if (move_count >= 2) {
+			if (move_count <= 0) {
 				foeMove();
-				move_count = 0;
+				move_count = 2;
 			}
 		} else if (result.has_guy != index+1) {
 			activeGuy = result.has_guy;
