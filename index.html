@@ -28,6 +28,9 @@
 			<button type="button" id="makeObs" onclick="buttonObs()">obstacle</button>place or remove an obstacle
 			<br>
 			<button type="button" id="path" onclick="buttonPath()">path</button>
+			<br>
+			<button type="button" id="spec" onclick="buttonSpecial()">specialAtk</button>
+			<button type="button" id="cancel" onclick="buttonCancel()">cancel</button>
 		</div>
 
 		<script language = "javascript">
@@ -40,7 +43,8 @@
 				obsArray = new Array(),
 				thatOneGuy = new Array(),
 				thatBadGuy = new Array(),
-				activeGuy = 1;
+				activeGuy = 1,
+				inactiveGuy = 2;
 
 			grid.x = 13;
 			grid.y = 7;
@@ -283,6 +287,73 @@
 
 			function buttonPath() {
 				buttonSelect(findPath);
+			}
+
+			function buttonCancel() {
+				var index = activeGuy-1;
+				thatOneGuy[index].spec_atk = [];
+				buttonSelect(moveGuy);
+			}
+
+			function buttonSpecial() {
+				whoIsGuy();
+				var a,
+					n,
+					aX,
+					aY,
+					nX,
+					nY,
+					loc,
+					retArray = new Array();
+				switch(activeGuy)
+				{
+				case 1:
+					a = 0;
+					n = 1;
+					break;
+				case 2:
+					a = 1;
+					n = 0;
+					break;
+				default:
+					console.log("incorrect activeGuy");
+				}
+				// get grids
+				// if non-active guy is adjacent to active guy, highlight all cells that are neighbors to active guy AND diagonals to non-active guy
+				aX = thatOneGuy[a].grid[0];
+				aY = thatOneGuy[a].grid[1];
+				nX = thatOneGuy[n].grid[0];
+				nY = thatOneGuy[n].grid[1];
+				var a_neighbors = field.neighbors(aX,aY);
+				for (var i=0;i<a_neighbors.length;i++) {
+					// if non-active guy is adjacent to active guy...
+					if (nX == a_neighbors[i].gridX && nY == a_neighbors[i].gridY) {
+						var n_diagonals = field.diagonals(nX,nY);
+						for (var j=0;j<n_diagonals.length;j++) {
+							for (var k=0;k<a_neighbors.length;k++) {
+								if (n_diagonals[j].gridX == a_neighbors[k].gridX && n_diagonals[j].gridY == a_neighbors[k].gridY) {
+									loc = a_neighbors[k];
+									var result = grid[loc.gridX][loc.gridY];
+									result.gridX = loc.gridX;
+									result.gridY = loc.gridY;
+									//retArray.push(result);
+									thatOneGuy[a].spec_atk.push(result);
+								}
+							}
+						}
+					}
+				}
+				if (thatOneGuy[a].spec_atk.length == 0) {
+					console.log("CANNOT UTILIZE SPECIAL ATTACK");
+					buttonSelect(moveGuy);
+				} else {
+					cxt.fillStyle = "orange";
+					for (var l=0;l<thatOneGuy[a].spec_atk.length;l++) {
+						thatOneGuy[a].spec_atk[l].draw(cxt);
+					}
+					redrawGuys();
+					document.onclick = special_atk;
+				}
 			}
 
 		</script>
