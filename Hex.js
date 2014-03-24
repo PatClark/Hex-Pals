@@ -138,3 +138,94 @@ function Hexcellent(aCellSize, aWidth, aHeight, aLeft, aTop) {
 		}					
 		return retval;
 	}
+
+	this.neighbors = function(aQ,anR) {
+		var q = aQ,
+			r = anR,
+			nQ,
+			nR,
+			parity,
+			d,
+			result,
+			retArray = new Array();
+		var neighbors = [
+			[
+				[+1,0],[+1,-1],[0,-1],[-1,-1],[-1,0],[0,+1]
+			],
+			[
+				[+1,+1],[+1,0],[0,-1],[-1,0],[-1,+1],[0,+1]
+			]
+		];
+		parity = q%2;
+
+		for (i=0;i<6;i++) {
+			d = neighbors[parity][i];
+			nQ = q+d[0];
+			nR = r+d[1];
+			if (nQ>-1 && nQ<gridWidth && nR>-1 && nR<gridHeight) {
+				result = grid[nQ][nR];
+				if (result.obs != true) {
+					result.gridX = nQ;
+					result.gridY = nR;
+					//console.log(nQ,nR);
+					retArray.push(result);
+				}			
+			}
+		}
+		return retArray;
+	}
+
+	this.diagonals = function(aQ,anR) {
+		var q = aQ,
+			r = anR,
+			nX,
+			nY,
+			nZ,
+			nQ,
+			nR,
+			diagonals = [[+2,-1,-1],[+1,+1,-2],[-1,+2,-1],[-2,+1,+1],[-1,-1,+2],[+1,-2,+1]],
+			d,
+			result,
+			convert,
+			revert,
+			retArray = new Array();
+
+		convert = convert_to_cube(q,r);
+
+		for (var i=0;i<6;i++) {
+			d = diagonals[i];
+			nX = convert[0] + d[0];
+			nY = convert[1] + d[1];
+			nZ = convert[2] + d[2];
+			revert = convert_to_odd_q(nX,nY,nZ);
+			nQ = revert[0];
+			nR = revert[1];
+			//console.log(nQ,nR);
+
+			if (nQ>-1 && nQ<gridWidth && nR>-1 && nR<gridHeight) {
+				result = grid[nQ][nR];
+				if (!result.obs) {
+					result.gridX = nQ;
+					result.gridY = nR;
+					retArray.push(result);
+				}
+			}
+		}
+		return retArray;
+	}
+}
+
+function convert_to_cube(aQ,anR) {
+	var x = aQ;
+	var z = anR - (aQ - (aQ%2))/2;
+	var y = -x - z;
+	var result = [x,y,z];
+	return result;
+}
+
+function convert_to_odd_q(anX,aY,aZ) {
+	var q = anX;
+	var r = aZ + (anX - (anX%2))/2;
+	var result = [q,r];
+	return result;
+}
