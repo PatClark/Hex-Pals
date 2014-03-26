@@ -1,11 +1,27 @@
+
 <!DOCTYPE html>
 <html>	
 	<head>
 		<meta charset="utf-8">
 		<style>
-			body {
-				margin: 0px;
-				padding: 0px;
+			body 
+			{
+			margin: 0px;
+			padding: 0px;
+			}
+			#canvasDiv
+			{
+			float:left;
+			}
+			#buttonDiv
+			{
+			position:relative;
+			top:40px;
+			float:left;
+			}
+			#endTurn
+			{
+			color:green;
 			}
 		</style>
 		<script language="javascript" src="/Users/Patrick/Downloads/js/Hex.js"></script>
@@ -14,23 +30,33 @@
 		<script language="javascript" src="/Users/Patrick/Downloads/js/HexPath.js"></script>
 	</head>
 	<body onload = "init();">
-		<canvas height=450 width=640 id = "hexCanvas">You'll need an HTML5-compliant browser to view this.
-		</canvas> <!iPhone is 1136x640>
-		<div id="buttonDiv" style="position:absolute;left:650px;top:50px;">
-			<button type="button" id="findCell" onclick="buttonFind()">findCell</button>
+		<div id="canvasDiv">
+			<canvas id= "hexCanvas" height=500 width=450>You'll need an HTML5-compliant browser to view this.
+			</canvas> <!iPhone is 1136x640>
+		</div>	
+		<!div id="buttonDiv" style="position:absolute;left:650px;top:50px;">
+		<div id="buttonDiv">
+			------------INFO
 			<br>
-			<!--button type="button" id="moveGuy" onclick="buttonMove()"><b>moveGuy</b></button>or just click on the guy
+			<!--button type="button" id="findCell" onclick="buttonFind()">findCell</button>
 			<br-->
+			<button type="button" id="path" onclick="buttonPath()">path</button>from red guy
+			<br>
+			------------LEVEL
+			<br>
 			<button type="button" id="makeFoe" onclick="buttonFoe()">makeFoe</button>place a single foe
 			<br>
 			<button type="button" id="pcgFoe" onclick="buttonPcg()">pcgFoe</button>generate five foes
 			<br>
 			<button type="button" id="makeObs" onclick="buttonObs()">obstacle</button>place or remove an obstacle
 			<br>
-			<button type="button" id="path" onclick="buttonPath()">path</button>
+			------------PLAY
 			<br>
 			<button type="button" id="spec" onclick="buttonSpecial()">specialAtk</button>
 			<button type="button" id="cancel" onclick="buttonCancel()">cancel</button>
+			<br>
+			<button type="button" id="cleanup" onclick="buttonCleanup()">Enemy Cleanup</button>
+			<button type="button" id="endTurn" onclick="buttonEndTurn()">End Turn</button>
 		</div>
 
 		<script language = "javascript">
@@ -46,8 +72,8 @@
 				activeGuy = 1,
 				inactiveGuy = 2;
 
-			grid.x = 13;
-			grid.y = 7;
+			grid.x = 8;
+			grid.y = 8;
 
 			var health=100;
 			function lose_health(dmg) {
@@ -261,6 +287,17 @@
 						func(e);
 					}
 				}
+			}
+
+			function buttonEndTurn() {
+				enemy_cleanup();
+				foeMove();
+				buttonSelect(moveGuy);
+			}
+
+			function buttonCleanup() {
+				enemy_cleanup();
+				buttonSelect(moveGuy);
 			}
 
 			function buttonFind() {
