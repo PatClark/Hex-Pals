@@ -1,6 +1,8 @@
 Hex-Pals/Compadres
 ========
-JavaScript hex map generator including obstacle creation and deletion, a pair of PCs with a special swing/cleave attack, and melee enemies utilizing A* pathfinding to target the nearest PC.
+JavaScript hex map generator including obstacle creation and deletion, a pair of PCs with a special swing/cleave attack, and melee foes utilizing A* pathfinding to target the nearest PC.
+
+Foes and obstacles must be hand-placed. Foes are destroyed if a PC occupies their space and the player clicks either the 'Enemy Cleanup' or 'End Turn' button. 'End Turn' also causes all foes to move one cell closer to the nearest PC.
 
 <b>Coding Wishlist:</b> random seeding, improved algorithm for better obstacle placement, level goal/collectibles, victory condition
 
