@@ -63,14 +63,14 @@ function moveGuy(e) {
 			pc.grid=[result.gridX,result.gridY];
 			result.has_guy = a+1;
 
-			move_count_down();
+			/*move_count_down();
 
 			enemy_cleanup();
 
 			if (move_count <= 0) {
 				foeMove();
 				move_count = 2;
-			}
+			}*/
 		} else if (result.has_guy != a+1) {
 			activeGuy = result.has_guy;
 			whoIsGuy();
@@ -154,12 +154,11 @@ function special_atk(e) {
 
 				thatOneGuy[n].grid=[result.gridX,result.gridY];
 				result.has_guy = n+1;
-				move_count_down();
-				enemy_cleanup();
+				//move_count_down();
+				//enemy_cleanup();
 
 				thatOneGuy[a].spec_atk = [];
-				redraw();
-				redrawGuys();
+				buttonSelect(moveGuy);
 			}
 		}
 	}
